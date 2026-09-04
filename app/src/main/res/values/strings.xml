@@ -1,4 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Hermes Mobile</string>
+    <string name="ask_lucy">Ask Lucy</string>
+    <string name="settings_title">Settings</string>
+    <string name="backend_url_label">Backend URL</string>
+    <string name="save">Save</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="open_app_settings">App settings</string>
+    <string name="pick_document">Pick document</string>
+    <string name="send">Send</string>
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="error_failed_to_send">Failed to send message</string>
 </resources>

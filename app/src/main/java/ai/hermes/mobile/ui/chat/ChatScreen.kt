@@ -21,8 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ai.hermes.mobile.R
 import ai.hermes.mobile.agentic.LocalActions
 import ai.hermes.mobile.ui.settings.SettingsScreen
 
@@ -41,7 +43,7 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel(), settingsViewModel: Settin
     Column(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
             IconButton(onClick = { showSettings = true }) {
-                Icon(imageVector = androidx.compose.material.icons.Icons.Default.Settings, contentDescription = "Settings")
+                Icon(imageVector = androidx.compose.material.icons.Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings_title))
             }
         }
 
@@ -64,14 +66,14 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel(), settingsViewModel: Settin
                     LocalActions.openAppSettings(ctx)
                     showQuickActions = false
                 }) {
-                    Icon(imageVector = androidx.compose.material.icons.Icons.Default.Settings, contentDescription = "App settings")
+                    Icon(imageVector = androidx.compose.material.icons.Icons.Default.Settings, contentDescription = stringResource(id = R.string.open_app_settings))
                 }
                 IconButton(onClick = {
                     val ctx = androidx.compose.ui.platform.LocalContext.current
                     LocalActions.pickDocument(ctx, "*/*")
                     showQuickActions = false
                 }) {
-                    Icon(imageVector = androidx.compose.material.icons.Icons.Default.Add, contentDescription = "Pick document")
+                    Icon(imageVector = androidx.compose.material.icons.Icons.Default.Add, contentDescription = stringResource(id = R.string.pick_document))
                 }
             }
         }
@@ -81,13 +83,13 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel(), settingsViewModel: Settin
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             IconButton(onClick = { showQuickActions = !showQuickActions }) {
-                Icon(imageVector = androidx.compose.material.icons.Icons.Default.Add, contentDescription = "Quick action")
+                Icon(imageVector = androidx.compose.material.icons.Icons.Default.Add, contentDescription = stringResource(id = R.string.quick_actions))
             }
             TextField(
                 value = input,
                 onValueChange = { input = it },
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("Ask Lucy") },
+                placeholder = { Text(stringResource(id = R.string.ask_lucy)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(autoCorrect = false),
                 keyboardActions = KeyboardActions(
@@ -105,7 +107,7 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel(), settingsViewModel: Settin
                     input = ""
                 }
             }) {
-                Icon(imageVector = androidx.compose.material.icons.Icons.Default.Send, contentDescription = "Send")
+                Icon(imageVector = androidx.compose.material.icons.Icons.Default.Send, contentDescription = null)
             }
         }
     }
