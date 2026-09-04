@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.documentfile.provider.DocumentFile
+import androidx.activity.result.contract.ActivityResultContracts
 
 object LocalActions {
     fun launchApp(context: Context, packageName: String): Boolean =
@@ -26,8 +26,7 @@ object LocalActions {
     }
 
     fun openQuickSettings() {
-        // Opens the quick settings panel via status bar expansion.
-        // No public API; requires system UI interaction, so leave as placeholder.
+        // Placeholder: opens quick settings via system UI.
     }
 
     fun createDocument(context: Context, mimeType: String, suggestedName: String): Uri? =
