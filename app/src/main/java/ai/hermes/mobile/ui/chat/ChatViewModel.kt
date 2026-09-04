@@ -1,14 +1,14 @@
 package ai.hermes.mobile.ui.chat
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ai.hermes.mobile.data.BackendConfig
 import ai.hermes.mobile.data.DatabaseProvider
 import ai.hermes.mobile.data.LocalMessage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
@@ -20,17 +20,17 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class ChatViewModel : ViewModel() {
-    private val _messages = mutableStateListOf<ChatMessage>()
-    val messages: List<ChatMessage> = _messages
+    private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
+    val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
 
     private val client = OkHttpClient()
-    private val dao = DatabaseProvider.get(androidx.compose.ui.platform.LocalContext.current.applicationContext).messageDao()
+    private val dao = DatabaseProvider.get(ai.hermes.mobile.LucyMobileApp.instance).messageDao()
     private val sessionId = "default"
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            dao.forSession(sessionId).forEach { legacy ->
-                _messages += ChatMessage(legacy.id, legacy.sessionId, legacy.role, legacy.content, legacy.timestamp)
+            _messages.value = dao.forSession(sessionId).map {
+                ChatMessage(it.id, it.sessionId, it.role, it.content, it.timestamp)
             }
         }
     }
@@ -38,7 +38,7 @@ class ChatViewModel : ViewModel() {
     fun sendMessage(text: String) {
         if (text.isBlank()) return
         val userMessage = ChatMessage(role = "user", content = text)
-        _messages += userMessage
+        _messages.value = _messages.value + userMessage
         viewModelScope.launch(Dispatchers.IO) {
             dao.insert(LocalMessage(sessionId = sessionId, role = "user", content = text))
         }
@@ -46,9 +46,9 @@ class ChatViewModel : ViewModel() {
     }
 
     private fun streamReply(userText: String) {
-        val history = _messages.toList()
+        val history = _messages.value
         val assistantMessage = ChatMessage(role = "assistant", content = "")
-        _messages += assistantMessage
+        _messages.value = history + assistantMessage
 
         val payload = JSONObject().apply {
             put("model", "Lucy-MOE")
@@ -67,7 +67,7 @@ class ChatViewModel : ViewModel() {
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
-                _messages[_messages.lastIndex] = ChatMessage(role = "assistant", content = "Error: ${response.code}")
+                _messages.value = _messages.value.dropLast(1) + ChatMessage(role = "assistant", content = "Error: ${response.code}")
                 return
             }
 
@@ -83,7 +83,7 @@ class ChatViewModel : ViewModel() {
                         val content = delta.optString("content", "")
                         if (content.isNotEmpty()) {
                             fullText += content
-                            _messages[_messages.lastIndex] = ChatMessage(role = "assistant", content = fullText)
+                            _messages.value = _messages.value.dropLast(1) + ChatMessage(role = "assistant", content = fullText)
                         }
                     } catch (_: Exception) {
                         // ignore partial SSE parse failures
