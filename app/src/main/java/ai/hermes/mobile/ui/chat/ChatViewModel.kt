@@ -24,7 +24,7 @@ class ChatViewModel : ViewModel() {
     val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
 
     private val client = OkHttpClient()
-    private val dao = DatabaseProvider.get(ai.hermes.mobile.LucyMobileApp.instance).messageDao()
+    private val dao = ai.hermes.mobile.LucyMobileApp.getInstance().database.messageDao()
     private val sessionId = "default"
 
     init {

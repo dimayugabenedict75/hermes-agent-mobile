@@ -10,4 +10,11 @@ class LucyMobileApp : Application() {
         super.onCreate()
         database = ai.hermes.mobile.data.DatabaseProvider.get(this)
     }
+
+    companion object {
+        lateinit var instance: LucyMobileApp
+            private set
+
+        fun getInstance(): LucyMobileApp = instance
+    }
 }
