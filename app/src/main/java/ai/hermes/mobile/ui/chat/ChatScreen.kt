@@ -31,6 +31,7 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel(), settingsViewModel: Settin
     val messages by viewModel.messages.collectAsState()
     var input by remember { mutableStateOf("") }
     var showSettings by remember { mutableStateOf(false) }
+    var showQuickActions by remember { mutableStateOf(false) }
 
     if (showSettings) {
         SettingsScreen(viewModel = settingsViewModel, onBack = { showSettings = false })
@@ -53,11 +54,33 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel(), settingsViewModel: Settin
             }
         }
 
+        if (showQuickActions) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                IconButton(onClick = {
+                    val ctx = androidx.compose.ui.platform.LocalContext.current
+                    LocalActions.openAppSettings(ctx)
+                    showQuickActions = false
+                }) {
+                    Icon(imageVector = androidx.compose.material.icons.Icons.Default.Settings, contentDescription = "App settings")
+                }
+                IconButton(onClick = {
+                    val ctx = androidx.compose.ui.platform.LocalContext.current
+                    LocalActions.pickDocument(ctx, "*/*")
+                    showQuickActions = false
+                }) {
+                    Icon(imageVector = androidx.compose.material.icons.Icons.Default.Add, contentDescription = "Pick document")
+                }
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            IconButton(onClick = { /* quick action placeholder */ }) {
+            IconButton(onClick = { showQuickActions = !showQuickActions }) {
                 Icon(imageVector = androidx.compose.material.icons.Icons.Default.Add, contentDescription = "Quick action")
             }
             TextField(
